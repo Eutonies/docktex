@@ -1,0 +1,1 @@
+docker build -f tex/Dockerfile -t nykreditsurn/docktex:1.0.0 .
