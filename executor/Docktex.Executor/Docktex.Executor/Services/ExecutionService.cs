@@ -1,6 +1,7 @@
 ﻿using Docktex.Executor.Configuration;
 using Docktex.Executor.Model;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Docktex.Executor.Services;
@@ -8,6 +9,7 @@ namespace Docktex.Executor.Services;
 public class ExecutionService : IExecutionService
 {
     private string _executionFolder;
+    private string _luaLatexCommand;
     private readonly SemaphoreSlim _executionsLock = new SemaphoreSlim(1);
 
     private string ExecutionFolder(long executionId) => $"{_executionFolder}/{executionId}";
@@ -15,6 +17,7 @@ public class ExecutionService : IExecutionService
     public ExecutionService(IOptions<ExecutorConfiguration> conf)
     {
         _executionFolder = conf.Value.ExecutionsPath;
+        _luaLatexCommand = conf.Value.LuaLatexBaseCommand;
     }
 
     public async Task AddFileToExecution(long executionId, string fileName, byte[] data)
@@ -94,4 +97,67 @@ public class ExecutionService : IExecutionService
         return new Execution(id, texFiles, fontFiles);    
 
     }
+
+    public async Task<ExecutionOutput?> ExecuteFile(long executionId, string mainTexFile)
+    {
+        if (!mainTexFile.ToLower().EndsWith("tex"))
+            return new ExecutionErrorOutput(
+                InfoOutput: [],
+                ErrorOutput: ["Execution file has to be .tex file"]
+                );
+        var fileToExecute = ExecutionFile(executionId, mainTexFile);
+        if (!Path.Exists(fileToExecute))
+            return new ExecutionErrorOutput(
+                InfoOutput: [],
+                ErrorOutput: ["TeX file to execute does not exist"]
+                );
+        var infoOutput = new List<string>();
+        var errorOutput = new List<string>();
+        var processStart = new ProcessStartInfo()
+        {
+            FileName = _luaLatexCommand,
+            Arguments = $"--pdf {fileToExecute}",
+            UseShellExecute = false,
+            CreateNoWindow = false,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true
+        };
+        var process = new Process() { StartInfo = processStart };
+        process.OutputDataReceived += (sender, data) => infoOutput.Add(data.Data ?? "");
+        process.ErrorDataReceived += (sender, data) => errorOutput.Add(data.Data ?? "");
+        try
+        {
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            await process.WaitForExitAsync();
+            var outputFile = mainTexFile.Substring(0, mainTexFile.Length - 3) + "pdf";
+            if(!File.Exists(outputFile))
+                return new ExecutionErrorOutput(
+                                InfoOutput: infoOutput.ToList(),
+                                ErrorOutput: errorOutput.ToList().Prepend(
+                                    "Output PDF file does not exist"
+                                    ).ToList()
+                                );
+            var fileBytes = await File.ReadAllBytesAsync(outputFile);
+            var returnee = new ExecutionSuccesOutput(outputFile, fileBytes);
+            return returnee;
+        }
+        catch (Exception ex)
+        {
+            var returnee = new ExecutionErrorOutput(
+                InfoOutput: infoOutput.ToList(),
+                ErrorOutput: errorOutput.ToList().Concat(
+                    [ex.Message, ex.StackTrace ?? ""]
+                    ).ToList()
+
+                );
+            return returnee;
+        }
+
+    }
+
+
+
+
 }
