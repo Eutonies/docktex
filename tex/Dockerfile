@@ -1,5 +1,5 @@
 # Build from ./..
-FROM ubuntu:latest as os
+FROM ubuntu:latest as latexed
 WORKDIR /tex
 COPY proxy-root.crt /usr/local/share/ca-certificates/proxy-root.pem
 COPY forti-proxy.crt /usr/local/share/ca-certificates/forti-proxy.pem
@@ -10,5 +10,10 @@ ENV http_proxy http://webproxy.nykreditnet.net:8080/
 ENV https_proxy http://webproxy.nykreditnet.net:8080/
 RUN apt-get install -y texlive-full
 
+FROM latexed as nextstage
+WORKDIR /sample
+COPY tex/sample/ .
+COPY tex/fonts/ /usr/local/share/fonts
+RUN fc-cache -fv
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
