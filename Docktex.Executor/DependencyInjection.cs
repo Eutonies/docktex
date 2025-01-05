@@ -18,8 +18,9 @@ public static class DependencyInjection
     {
         builder.Services.AddControllers()
           .AddApplicationPart(typeof(ExecutionController).Assembly);
-        builder.Services.AddOpenApi();
-        builder.Services.AddOpenApiDocument();
+        builder.Services.AddOpenApi(opts => {
+            opts.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
+        });
         builder.Services.AddSingleton<IExecutionService, ExecutionService>();
         return builder;
     }
@@ -30,9 +31,14 @@ public static class DependencyInjection
         if(!string.IsNullOrWhiteSpace(conf.HostingBasePath))
           app.UsePathBase(conf.HostingBasePath);
         app.UseRouting();
+        app.MapOpenApi("openapi/v1.json");
+        app.UseSwaggerUi(opts => {
+            if(!string.IsNullOrWhiteSpace(conf.HostingBasePath)) {
+                opts.Path = $"/{conf.HostingBasePath}";
+            }
+            opts.DocumentPath = "openapi/v1.json";
+        });
         app.MapControllers();
-        app.MapOpenApi();
-        app.UseSwaggerUi();
         return app;
     }
 

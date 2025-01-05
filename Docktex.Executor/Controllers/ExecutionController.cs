@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Docktex.Executor.Controllers;
 
+[ApiController]
 [Route("[controller]")]
 public class ExecutionController : ControllerBase
 {
