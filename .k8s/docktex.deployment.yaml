@@ -20,7 +20,7 @@ spec:
             claimName: docktex-volume-claim
       containers:
       - name: docktex
-        image: docker.io/library/docktex:1.0.4
+        image: docker.io/library/docktex:1.0.7
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
@@ -31,5 +31,7 @@ spec:
         env:
         - name: Executor__ExecutionsPath
           value: /data/executions
+        - name: Executor__HostingBasePath
+          value: docktex
         - name: ASPNETCORE_HTTP_PORTS
           value: "8080"
