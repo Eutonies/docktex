@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Docktex.Executor.Controllers;
 
-[Route("{controller}")]
+[Route("[controller]")]
 public class ExecutionController : ControllerBase
 {
     [HttpPost("upload")]

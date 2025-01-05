@@ -1,4 +1,5 @@
 ﻿using Docktex.Executor.Configuration;
+using Docktex.Executor.Controllers;
 using Docktex.Executor.Services;
 
 namespace Docktex.Executor;
@@ -15,7 +16,8 @@ public static class DependencyInjection
 
     public static WebApplicationBuilder AddExecutor(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+          .AddApplicationPart(typeof(ExecutionController).Assembly);
         builder.Services.AddOpenApi();
         builder.Services.AddOpenApiDocument();
         builder.Services.AddSingleton<IExecutionService, ExecutionService>();
@@ -28,9 +30,9 @@ public static class DependencyInjection
         if(!string.IsNullOrWhiteSpace(conf.HostingBasePath))
           app.UsePathBase(conf.HostingBasePath);
         app.UseRouting();
+        app.MapControllers();
         app.MapOpenApi();
         app.UseSwaggerUi();
-        app.MapControllers();
         return app;
     }
 
