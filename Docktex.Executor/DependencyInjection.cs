@@ -17,16 +17,29 @@ public static class DependencyInjection
     {
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+        builder.Services.AddOpenApiDocument();
         builder.Services.AddSingleton<IExecutionService, ExecutionService>();
         return builder;
     }
 
     public static WebApplication UseExecutor(this WebApplication app)
     {
+        var conf = app.ExecutorConfig();
+        if(!string.IsNullOrWhiteSpace(conf.HostingBasePath))
+          app.UsePathBase(conf.HostingBasePath);
+        app.UseRouting();
         app.MapOpenApi();
-        app.UseAuthorization();
+        app.UseSwaggerUi();
         app.MapControllers();
         return app;
+    }
+
+    public static ExecutorConfiguration ExecutorConfig(this WebApplication app) => app.Configuration.ExecutorConfig();
+    public static ExecutorConfiguration ExecutorConfig(this IConfiguration config)
+    {
+        var returnee = new ExecutorConfiguration();
+        config.Bind(ExecutorConfiguration.ConfigurationElementName, returnee);
+        return returnee;
     }
 
 

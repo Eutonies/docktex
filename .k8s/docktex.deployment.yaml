@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docktex
+  labels:
+    app: docktex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docktex
+  template:
+    metadata:
+      labels:
+        app: docktex
+    spec:
+      volumes:
+        - name: docktex-volume
+          persistentVolumeClaim:
+            claimName: docktex-volume-claim
+      containers:
+      - name: docktex
+        image: docker.io/library/docktex:1.0.2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+          name: http-docktex
+        volumeMounts:
+          - mountPath: /data/executions
+            name: docktex-volume
+        env:
+        - name: Executor__ExecutionsPath
+          value: /data/executions
+        - name: ASPNETCORE_HTTP_PORTS
+          value: "8080"
