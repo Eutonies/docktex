@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docktex.Executor", "Docktex.Executor\Docktex.Executor.csproj", "{6AF61E04-96CC-4674-BC42-0F01D2BAE2C0}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4C7CE154-0996-4C6E-B29E-0EE36E389876}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6AF61E04-96CC-4674-BC42-0F01D2BAE2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AF61E04-96CC-4674-BC42-0F01D2BAE2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AF61E04-96CC-4674-BC42-0F01D2BAE2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7CE154-0996-4C6E-B29E-0EE36E389876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7CE154-0996-4C6E-B29E-0EE36E389876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7CE154-0996-4C6E-B29E-0EE36E389876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7CE154-0996-4C6E-B29E-0EE36E389876}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

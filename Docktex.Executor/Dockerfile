@@ -1,10 +1,3 @@
-FROM ubuntu:latest AS latexed
-WORKDIR /tex
-RUN apt-get update
-RUN apt-get install -y ca-certificates
-RUN update-ca-certificates
-RUN apt-get install -y texlive-full
-
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -20,7 +13,7 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Docktex.Executor.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-FROM latexed AS nextstage
+FROM docker.io/suneroenne/docktex:latest AS nextstage
 COPY tex/fonts/ /usr/local/share/fonts
 RUN fc-cache -fv
 RUN apt install -y software-properties-common

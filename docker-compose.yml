@@ -1,0 +1,6 @@
+services:
+  docktex.executor:
+    image: ${DOCKER_REGISTRY-}docktexexecutor
+    build:
+      context: .
+      dockerfile: Docktex.Executor/Dockerfile
