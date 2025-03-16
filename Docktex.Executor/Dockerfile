@@ -27,5 +27,6 @@ RUN add-apt-repository ppa:dotnet/backports
 RUN apt-get install -y dotnet-sdk-9.0
 WORKDIR /app
 COPY --from=publish /app/publish .
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "Docktex.Executor.dll"]
